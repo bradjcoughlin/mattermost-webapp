@@ -1088,7 +1088,7 @@ export default class CreatePost extends React.Component {
             createMessage = Utils.localizeMessage('create_post.read_only', 'This channel is read-only. Only members with permission can post here.');
         } else {
             createMessage = formatMessage(
-                {id: 'create_post.write', defaultMessage: 'Write to {channelDisplayName}...'},
+                {id: 'create_post.write', defaultMessage: 'Write to {channelDisplayName}'},
                 {channelDisplayName: currentChannel.display_name}
             );
         }
