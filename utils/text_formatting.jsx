@@ -8,7 +8,7 @@ import {formatWithRenderer} from 'utils/markdown';
 import {getEmojiMap} from 'selectors/emojis';
 import store from 'stores/redux_store.jsx';
 
-import * as Emoticons from './emoticons.jsx';
+import * as Emoticons from './emoticons';
 import * as Markdown from './markdown';
 
 const punctuation = XRegExp.cache('[^\\pL\\d]');
@@ -162,7 +162,7 @@ function autolinkEmails(text, tokens) {
         const alias = `$MM_EMAIL${index}$`;
 
         tokens.set(alias, {
-            value: `<a class="theme" href="mailto:${email}">${email}</a>`,
+            value: `<a class="theme" href="mailto:${email}" rel="noreferrer" target="_blank">${email}</a>`,
             originalText: email,
         });
 
