@@ -3963,21 +3963,6 @@ const AdminDefinition = {
                             isHidden: needsUtils.not(needsUtils.hasLicense), // E10 and higher
                             isDisabled: needsUtils.stateValueFalse('ThemeSettings.EnableThemeSelection'),
                         },
-
-                        // {
-                        //     type: Constants.SettingsTypes.TYPE_LIST,
-                        //     key: 'ThemeSettings.AllowedThemes',
-                        //     label: t('admin.experimental.allowedThemes.title'),
-                        //     label_default: 'Allowed Themes',
-                        //     help_text: t('admin.experimental.allowedThemes.desc'),
-                        //     help_text_default: 'A comma-separated list of themes that can be chosen by users when "EnableThemeSelection" is set to true.',
-                        //     help_text_markdown: true,
-                        //     placeholder: t('admin.experimental.allowedThemes.example'),
-                        //     placeholder_default: 'E.g.: "default, organization, mattermostDark, windows10"',
-                        //     isHidden: needsUtils.not(needsUtils.hasLicense), // E10 and higher
-                        //     isDisabled: needsUtils.stateValueTrue('ThemeSettings.EnableThemeSelection'),
-                        // },
-
                         {
                             type: Constants.SettingsTypes.TYPE_TEXT,
                             key: 'ThemeSettings.DefaultTheme',
@@ -4118,43 +4103,9 @@ const AdminDefinition = {
                             placeholder: t('admin.experimental.userStatusAwayTimeout.example'),
                             placeholder_default: 'E.g.: "300"',
                         },
-
-                        // {
-                        //     type: Constants.SettingsTypes.TYPE_BOOL,
-                        //     key: 'ServiceSettings.ExperimentalStrictCSRFEnforcement',
-                        //     label: t('admin.experimental.experimentalStrictCSRFEnforcement.title'),
-                        //     label_default: 'TODO',
-                        //     help_text: t('admin.experimental.experimentalStrictCSRFEnforcement.desc'),
-                        //     help_text_default: 'TODO',
-                        //     help_text_markdown: false,
-                        // },
-
-                        // {
-                        //     type: Constants.SettingsTypes.TYPE_LIST,
-                        //     key: 'TeamSettings.ExperimentalDefaultChannels',
-                        //     label: t('admin.experimental.experimentalDefaultChannels.title'),
-                        //     label_default: 'Default Channels',
-                        //     help_text: t('admin.experimental.experimentalDefaultChannels.desc'),
-                        //     help_text_default: 'A comma-separated list of default channels every user is added to automatically after joining a new team. Only applies to public channels, but affects all teams on the server. When not set, every user is added to `off-topic` and `town-square` channel by default. Note that even if `town-square` is not listed, every user is added to that channel after joining a new team.',
-                        //     help_text_markdown: true,
-                        //     placeholder: t('admin.experimental.experimentalDefaultChannels.example'),
-                        //     placeholder_default: 'E.g.: "channel1, channel2, off-topic"',
-                        // },
-
-                        // {
-                        //     type: Constants.SettingsTypes.TYPE_TEXT,
-                        //     key: 'EmailSettings.ReplyToAddress',
-                        //     label: t('admin.experimental.replyToAddress.title'),
-                        //     label_default: 'Reply To Address',
-                        //     help_text: t('admin.experimental.replyToAddress.desc'),
-                        //     help_text_default: 'TODO',
-                        //     help_text_markdown: true,
-                        //     placeholder: t('admin.experimental.replyToAddress.example'),
-                        //     placeholder_default: 'E.g.: "reply-to@example.com"',
-                        // },
-
                     ],
                 },
+            },
         },
         cors: {
             url: 'integrations/cors',
@@ -4572,20 +4523,6 @@ const AdminDefinition = {
                         isHidden: it.isnt(it.licensed), // E10 and higher
                         isDisabled: it.stateIsFalse('ThemeSettings.EnableThemeSelection'),
                     },
-
-                    // {
-                    //     type: Constants.SettingsTypes.TYPE_LIST,
-                    //     key: 'ThemeSettings.AllowedThemes',
-                    //     label: t('admin.experimental.allowedThemes.title'),
-                    //     label_default: 'Allowed Themes:',
-                    //     help_text: t('admin.experimental.allowedThemes.desc'),
-                    //     help_text_default: 'A comma-separated list of themes that can be chosen by users when "EnableThemeSelection" is set to true.',
-                    //     help_text_markdown: true,
-                    //     placeholder: t('admin.experimental.allowedThemes.example'),
-                    //     placeholder_default: 'E.g.: "default, organization, mattermostDark, windows10"',
-                    //     isHidden: it.isnt(it.licensed), // E10 and higher
-                    //     isDisabled: it.stateIsTrue('ThemeSettings.EnableThemeSelection'),
-                    // },
                     {
                         type: Constants.SettingsTypes.TYPE_TEXT,
                         key: 'ThemeSettings.DefaultTheme',
@@ -4755,38 +4692,7 @@ const AdminDefinition = {
                         help_text_markdown: false,
                         placeholder: t('admin.experimental.userStatusAwayTimeout.example'),
                         placeholder_default: 'E.g.: "300"',
-                    }, // eslint-disable-next-line lines-around-comment
-                    // {
-                    //     type: Constants.SettingsTypes.TYPE_BOOL,
-                    //     key: 'ServiceSettings.ExperimentalStrictCSRFEnforcement',
-                    //     label: t('admin.experimental.experimentalStrictCSRFEnforcement.title'),
-                    //     label_default: 'TODO:',
-                    //     help_text: t('admin.experimental.experimentalStrictCSRFEnforcement.desc'),
-                    //     help_text_default: 'TODO',
-                    //     help_text_markdown: false,
-                    // },
-                    // {
-                    //     type: Constants.SettingsTypes.TYPE_LIST,
-                    //     key: 'TeamSettings.ExperimentalDefaultChannels',
-                    //     label: t('admin.experimental.experimentalDefaultChannels.title'),
-                    //     label_default: 'Default Channels:',
-                    //     help_text: t('admin.experimental.experimentalDefaultChannels.desc'),
-                    //     help_text_default: 'A comma-separated list of default channels every user is added to automatically after joining a new team. Only applies to public channels, but affects all teams on the server. When not set, every user is added to `off-topic` and `town-square` channel by default. Note that even if `town-square` is not listed, every user is added to that channel after joining a new team.',
-                    //     help_text_markdown: true,
-                    //     placeholder: t('admin.experimental.experimentalDefaultChannels.example'),
-                    //     placeholder_default: 'E.g.: "channel1, channel2, off-topic"',
-                    // },
-                    // {
-                    //     type: Constants.SettingsTypes.TYPE_TEXT,
-                    //     key: 'EmailSettings.ReplyToAddress',
-                    //     label: t('admin.experimental.replyToAddress.title'),
-                    //     label_default: 'Reply To Address:',
-                    //     help_text: t('admin.experimental.replyToAddress.desc'),
-                    //     help_text_default: 'TODO',
-                    //     help_text_markdown: true,
-                    //     placeholder: t('admin.experimental.replyToAddress.example'),
-                    //     placeholder_default: 'E.g.: "reply-to@example.com"',
-                    // },
+                    },
                 ],
             },
         },
