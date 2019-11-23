@@ -2,10 +2,11 @@
 // See LICENSE.txt for license information.
 
 import {haveIChannelPermission} from 'mattermost-redux/selectors/entities/roles';
+import {getRedirectChannelNameForTeam as getRedirectChannelNameForTeamRedux} from 'mattermost-redux/selectors/entities/channels';
 import Permissions from 'mattermost-redux/constants/permissions';
 
 import store from 'stores/redux_store.jsx';
-import Constants from 'utils/constants.jsx';
+import Constants from 'utils/constants';
 import * as Utils from 'utils/utils.jsx';
 
 export function canManageMembers(channel) {
@@ -46,4 +47,8 @@ export function findNextUnreadChannelId(curChannelId, allChannelIds, unreadChann
     }
 
     return -1;
+}
+
+export function getRedirectChannelNameForTeam(teamId) {
+    return getRedirectChannelNameForTeamRedux(store.getState(), teamId);
 }

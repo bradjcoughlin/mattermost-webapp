@@ -7,7 +7,7 @@ import {Posts} from 'mattermost-redux/constants';
 
 import * as PostUtils from 'utils/post_utils.jsx';
 import * as Utils from 'utils/utils.jsx';
-import DelayedAction from 'utils/delayed_action.jsx';
+import DelayedAction from 'utils/delayed_action';
 
 import CommentedOn from 'components/post_view/commented_on';
 import FileAttachmentListContainer from 'components/file_attachment_list';
@@ -15,7 +15,7 @@ import FailedPostOptions from 'components/post_view/failed_post_options';
 import PostBodyAdditionalContent from 'components/post_view/post_body_additional_content';
 import PostMessageView from 'components/post_view/post_message_view';
 import ReactionList from 'components/post_view/reaction_list';
-import LoadingBars from 'components/widgets/loading/loading_bars.jsx';
+import LoadingSpinner from 'components/widgets/loading/loading_spinner';
 
 const SENDING_ANIMATION_DELAY = 3000;
 
@@ -56,11 +56,6 @@ export default class PostBody extends React.PureComponent {
          * Set to render a preview of the parent post above this reply
          */
         isFirstReply: PropTypes.bool,
-
-        /**
-         * User's preference to link previews
-         */
-        previewEnabled: PropTypes.bool,
 
         /*
          * Post type components from plugins
@@ -107,6 +102,22 @@ export default class PostBody extends React.PureComponent {
         this.state = {sending: false};
     }
 
+    static getDerivedStateFromProps(props, state) {
+        if (state.sending && props.post && (props.post.id !== props.post.pending_post_id)) {
+            return {
+                sending: false,
+            };
+        }
+
+        return null;
+    }
+
+    componentDidUpdate() {
+        if (this.state.sending === false) {
+            this.sendingAction.cancel();
+        }
+    }
+
     componentDidMount() {
         const post = this.props.post;
         if (post && post.id === post.pending_post_id) {
@@ -116,14 +127,6 @@ export default class PostBody extends React.PureComponent {
 
     componentWillUnmount() {
         this.sendingAction.cancel();
-    }
-
-    UNSAFE_componentWillReceiveProps(nextProps) { // eslint-disable-line camelcase
-        const post = nextProps.post;
-        if (post && post.id !== post.pending_post_id) {
-            this.sendingAction.cancel();
-            this.setState({sending: false});
-        }
     }
 
     render() {
@@ -169,7 +172,7 @@ export default class PostBody extends React.PureComponent {
         const messageWrapper = (
             <React.Fragment>
                 {failedOptions}
-                {this.state.sending && <LoadingBars/>}
+                {this.state.sending && <LoadingSpinner/>}
                 <PostMessageView
                     post={this.props.post}
                     compactDisplay={this.props.compactDisplay}
@@ -179,7 +182,8 @@ export default class PostBody extends React.PureComponent {
             </React.Fragment>
         );
 
-        const hasPlugin = post.type && this.props.pluginPostTypes.hasOwnProperty(post.type);
+        const hasPlugin = (post.type && this.props.pluginPostTypes.hasOwnProperty(post.type)) ||
+            (post.props && post.props.type && this.props.pluginPostTypes.hasOwnProperty(post.props.type));
 
         let messageWithAdditionalContent;
         if (this.props.post.state === Posts.POST_DELETED || hasPlugin) {
@@ -188,7 +192,6 @@ export default class PostBody extends React.PureComponent {
             messageWithAdditionalContent = (
                 <PostBodyAdditionalContent
                     post={this.props.post}
-                    previewEnabled={this.props.previewEnabled}
                     isEmbedVisible={this.props.isEmbedVisible}
                 >
                     {messageWrapper}

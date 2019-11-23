@@ -5,7 +5,8 @@ import React from 'react';
 import {Modal} from 'react-bootstrap';
 import {shallow} from 'enzyme';
 
-import Constants from 'utils/constants.jsx';
+import {generateId} from 'utils/utils.jsx';
+import Constants from 'utils/constants';
 import ViewImageModal from 'components/view_image/view_image.jsx';
 
 describe('components/ViewImageModal', () => {
@@ -17,6 +18,7 @@ describe('components/ViewImageModal', () => {
         onModalDismissed,
         canDownloadFiles: true,
         enablePublicLink: true,
+        post: {},
     };
 
     test('should match snapshot, modal not shown', () => {
@@ -87,7 +89,7 @@ describe('components/ViewImageModal', () => {
         const props = {...requiredProps, fileInfos};
         const wrapper = shallow(<ViewImageModal {...props}/>);
 
-        wrapper.setState({loaded: [true, true, true], showFooter: false});
+        wrapper.setState({loaded: [true, true, true], showCloseBtn: false});
         expect(wrapper).toMatchSnapshot();
         expect(wrapper.find('#previewArrowLeft').exists()).toBe(true);
         expect(wrapper.find('#previewArrowRight').exists()).toBe(true);
@@ -114,7 +116,7 @@ describe('components/ViewImageModal', () => {
         const props = {...requiredProps, fileInfos};
         const wrapper = shallow(<ViewImageModal {...props}/>);
 
-        wrapper.setState({loaded: [true, true, true], showFooter: true});
+        wrapper.setState({loaded: [true, true, true]});
         expect(wrapper).toMatchSnapshot();
     });
 
@@ -128,7 +130,7 @@ describe('components/ViewImageModal', () => {
     test('should match snapshot, loaded and showing footer', () => {
         const wrapper = shallow(<ViewImageModal {...requiredProps}/>);
 
-        wrapper.setState({loaded: [true], showFooter: true});
+        wrapper.setState({loaded: [true]});
         expect(wrapper).toMatchSnapshot();
     });
 
@@ -162,10 +164,10 @@ describe('components/ViewImageModal', () => {
         wrapper.setState({loaded: [true]});
 
         wrapper.instance().onMouseEnterImage();
-        expect(wrapper.state('showFooter')).toBe(true);
+        expect(wrapper.state('showCloseBtn')).toBe(true);
 
         wrapper.instance().onMouseLeaveImage();
-        expect(wrapper.state('showFooter')).toBe(false);
+        expect(wrapper.state('showCloseBtn')).toBe(false);
     });
 
     test('should have called onModalDismissed', () => {
@@ -174,7 +176,7 @@ describe('components/ViewImageModal', () => {
         const wrapper = shallow(<ViewImageModal {...props}/>);
         wrapper.setState({
             loaded: [true],
-            showFooter: true,
+            showCloseBtn: true,
         });
         wrapper.instance().handleGetPublicLink();
 
@@ -292,5 +294,31 @@ describe('components/ViewImageModal', () => {
         wrapper.setProps(nextProps);
         expect(wrapper.state('loaded').length).toBe(3);
         expect(wrapper.state('progress').length).toBe(3);
+    });
+
+    test('should match snapshot when plugin overrides the preview component', () => {
+        const pluginFilePreviewComponents = [{
+            id: generateId(),
+            pluginId: 'file-preview',
+            override: () => true,
+            component: () => <div>{'Preview'}</div>,
+        }];
+        const props = {...requiredProps, pluginFilePreviewComponents};
+        const wrapper = shallow(<ViewImageModal {...props}/>);
+
+        expect(wrapper).toMatchSnapshot();
+    });
+
+    test('should fall back to default preview if plugin does not need to override preview component', () => {
+        const pluginFilePreviewComponents = [{
+            id: generateId(),
+            pluginId: 'file-preview',
+            override: () => false,
+            component: () => <div>{'Preview'}</div>,
+        }];
+        const props = {...requiredProps, pluginFilePreviewComponents};
+        const wrapper = shallow(<ViewImageModal {...props}/>);
+
+        expect(wrapper).toMatchSnapshot();
     });
 });

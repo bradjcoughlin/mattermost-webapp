@@ -9,7 +9,7 @@ import Permissions from 'mattermost-redux/constants/permissions';
 
 import {browserHistory} from 'utils/browser_history';
 
-import {getRelativeChannelURL} from 'utils/url.jsx';
+import {getRelativeChannelURL} from 'utils/url';
 
 import SearchableChannelList from 'components/searchable_channel_list.jsx';
 import TeamPermissionGate from 'components/permissions_gates/team_permission_gate';
@@ -161,7 +161,7 @@ export default class MoreChannels extends React.Component {
         const createNewChannelButton = (
             <TeamPermissionGate
                 teamId={teamId}
-                permissions={[Permissions.CREATE_PUBLIC_CHANNEL, Permissions.CREATE_PRIVATE_CHANNEL]}
+                permissions={[Permissions.CREATE_PUBLIC_CHANNEL]}
             >
                 <button
                     id='createNewChannel'
@@ -214,13 +214,18 @@ export default class MoreChannels extends React.Component {
 
         return (
             <Modal
-                dialogClassName='more-modal more-modal--action'
+                dialogClassName='a11y__modal more-modal more-modal--action'
                 show={show}
                 onHide={this.handleHide}
                 onExited={this.handleExit}
+                role='dialog'
+                aria-labelledby='moreChannelsModalLabel'
             >
                 <Modal.Header closeButton={true}>
-                    <Modal.Title>
+                    <Modal.Title
+                        componentClass='h1'
+                        id='moreChannelsModalLabel'
+                    >
                         <FormattedMessage
                             id='more_channels.title'
                             defaultMessage='More Channels'

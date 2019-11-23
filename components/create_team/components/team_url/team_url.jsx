@@ -9,7 +9,7 @@ import {FormattedMessage} from 'react-intl';
 
 import {trackEvent} from 'actions/diagnostics_actions.jsx';
 import Constants from 'utils/constants.jsx';
-import * as URL from 'utils/url.jsx';
+import * as URL from 'utils/url';
 import logoImage from 'images/logo.png';
 
 import FormattedMarkdownMessage from 'components/formatted_markdown_message.jsx';
@@ -139,7 +139,7 @@ export default class TeamUrl extends React.PureComponent {
         const {data, error} = await createTeam(teamSignup.team);
 
         if (data) {
-            this.props.history.push('/' + data.name + '/channels/town-square');
+            this.props.history.push('/' + data.name + '/channels/' + Constants.DEFAULT_CHANNEL);
             trackEvent('signup', 'signup_team_03_complete');
         } else if (error) {
             this.setState({nameError: error.message});
@@ -185,6 +185,7 @@ export default class TeamUrl extends React.PureComponent {
             <div>
                 <form>
                     <img
+                        alt={'signup team logo'}
                         className='signup-team-logo'
                         src={logoImage}
                     />
@@ -199,7 +200,6 @@ export default class TeamUrl extends React.PureComponent {
                             <div className='col-sm-11'>
                                 <div className='input-group input-group--limit'>
                                     <OverlayTrigger
-                                        trigger={['hover', 'focus']}
                                         delayShow={Constants.OVERLAY_TIME_DELAY}
                                         placement='top'
                                         overlay={urlTooltip}

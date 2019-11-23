@@ -7,8 +7,9 @@ import ReactDOM from 'react-dom';
 import {FormattedMessage} from 'react-intl';
 
 import {oauthToEmail} from 'actions/admin_actions.jsx';
-import Constants from 'utils/constants.jsx';
+import Constants from 'utils/constants';
 import * as Utils from 'utils/utils.jsx';
+import {t} from 'utils/i18n.jsx';
 import LocalizedInput from 'components/localized_input/localized_input';
 
 export default class OAuthToEmail extends React.PureComponent {
@@ -22,12 +23,10 @@ export default class OAuthToEmail extends React.PureComponent {
     constructor(props) {
         super(props);
 
-        this.submit = this.submit.bind(this);
-
         this.state = {};
     }
 
-    submit(e) {
+    submit = (e) => {
         e.preventDefault();
         const state = {};
 
@@ -114,7 +113,7 @@ export default class OAuthToEmail extends React.PureComponent {
                             className='form-control'
                             name='password'
                             ref='password'
-                            placeholder={{id: 'claim.oauth_to_email.newPwd', defaultMessage: 'New Password'}}
+                            placeholder={{id: t('claim.oauth_to_email.newPwd'), defaultMessage: 'New Password'}}
                             spellCheck='false'
                         />
                     </div>
@@ -124,7 +123,7 @@ export default class OAuthToEmail extends React.PureComponent {
                             className='form-control'
                             name='passwordconfirm'
                             ref='passwordconfirm'
-                            placeholder={{id: 'claim.oauth_to_email.confirm', defaultMessage: 'Confirm Password'}}
+                            placeholder={{id: t('claim.oauth_to_email.confirm'), defaultMessage: 'Confirm Password'}}
                             spellCheck='false'
                         />
                     </div>

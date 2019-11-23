@@ -26,6 +26,7 @@ jest.mock('utils/utils', () => ({
     applyTheme: jest.fn(),
     localizeMessage: jest.fn(),
     areObjectsEqual: jest.fn(),
+    isGuest: jest.fn(),
 }));
 
 describe('components/needs_team', () => {
@@ -45,28 +46,29 @@ describe('components/needs_team', () => {
         },
     };
 
-    const teamData = [
-        ...teamsList,
-        {
-            id: 'kemjcpu9bi877yegqjs18ndp4d',
-            invite_id: 'kemjcpu9bi877yegqjs18ndp4a',
-            name: 'new',
-        },
-    ];
+    const teamData = {
+        id: 'kemjcpu9bi877yegqjs18ndp4d',
+        invite_id: 'kemjcpu9bi877yegqjs18ndp4a',
+        name: 'new',
+    };
 
     const actions = {
         fetchMyChannelsAndMembers: jest.fn().mockResolvedValue({data: true}),
         getMyTeamUnreads: jest.fn(),
         viewChannel: jest.fn(),
         markChannelAsRead: jest.fn(),
-        getTeams: jest.fn().mockResolvedValue({data: teamData}),
-        joinTeam: jest.fn().mockResolvedValue({data: true}),
+        getTeamByName: jest.fn().mockResolvedValue({data: teamData}),
+        addUserToTeam: jest.fn().mockResolvedValue({data: true}),
         selectTeam: jest.fn(),
         setPreviousTeamId: jest.fn(),
-        loadStatusesForChannelAndSidebar: jest.fn(),
+        loadStatusesForChannelAndSidebar: jest.fn().mockResolvedValue({data: true}),
+        loadProfilesForDirect: jest.fn().mockResolvedValue({data: true}),
     };
     const baseProps = {
         actions,
+        currentUser: {
+            id: 'test',
+        },
         theme: {},
         mfaRequired: false,
         match,
@@ -95,9 +97,9 @@ describe('components/needs_team', () => {
         });
     });
 
-    it('check for joinTeam call if team does not exist', async () => {
-        const joinTeam = jest.fn().mockResolvedValue({data: true});
-        const newActions = {...baseProps.actions, joinTeam};
+    it('check for addUserToTeam call if team does not exist', async () => {
+        const addUserToTeam = jest.fn().mockResolvedValue({data: true});
+        const newActions = {...baseProps.actions, addUserToTeam};
         const props = {...baseProps, actions: newActions};
 
         const wrapper = shallow(
@@ -105,12 +107,12 @@ describe('components/needs_team', () => {
         );
         expect(wrapper.state().team).toEqual(null);
         await wrapper.instance().joinTeam(props);
-        expect(joinTeam).toHaveBeenCalledTimes(2); // called twice, first on initial mount and then on instance().joinTeam()
+        expect(addUserToTeam).toHaveBeenCalledTimes(2); // called twice, first on initial mount and then on instance().joinTeam()
     });
 
-    it('test for redirection if joinTeam api fails', async () => {
-        const joinTeam = jest.fn().mockResolvedValue({error: {}});
-        const newActions = {...baseProps.actions, joinTeam};
+    it('test for redirection if addUserToTeam api fails', async () => {
+        const addUserToTeam = jest.fn().mockResolvedValue({error: {}});
+        const newActions = {...baseProps.actions, addUserToTeam};
         const props = {...baseProps, actions: newActions};
 
         const wrapper = shallow(
@@ -123,13 +125,13 @@ describe('components/needs_team', () => {
     });
 
     it('test for team join flow with new switch', async () => {
-        const joinTeam = jest.fn().mockResolvedValue({data: 'horray'});
+        const addUserToTeam = jest.fn().mockResolvedValue({data: 'horray'});
 
         const getMyTeamUnreads = jest.fn();
         const selectTeam = jest.fn();
         const setPreviousTeamId = jest.fn();
 
-        const newActions = {...baseProps.actions, getMyTeamUnreads, joinTeam, selectTeam, setPreviousTeamId};
+        const newActions = {...baseProps.actions, getMyTeamUnreads, addUserToTeam, selectTeam, setPreviousTeamId};
         const props = {...baseProps, actions: newActions};
 
         const wrapper = shallow(

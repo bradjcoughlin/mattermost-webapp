@@ -4,7 +4,12 @@
 import {createSelector} from 'reselect';
 import {getCurrentUserId} from 'mattermost-redux/selectors/entities/users';
 import {getCurrentTeamId} from 'mattermost-redux/selectors/entities/teams';
-import {makeGetMessageInHistoryItem, makeGetCommentCountForPost, getPost} from 'mattermost-redux/selectors/entities/posts';
+import {
+    makeGetMessageInHistoryItem,
+    makeGetCommentCountForPost,
+    getPost,
+    getPostIdsInChannel,
+} from 'mattermost-redux/selectors/entities/posts';
 import {getCustomEmojisByName} from 'mattermost-redux/selectors/entities/emojis';
 import {
     removeReaction,
@@ -17,12 +22,13 @@ import {isPostPendingOrFailed} from 'mattermost-redux/utils/post_utils';
 
 import * as PostActions from 'actions/post_actions.jsx';
 import {executeCommand} from 'actions/command';
+import {runMessageWillBePostedHooks, runSlashCommandWillBePostedHooks} from 'actions/hooks';
 import {setGlobalItem, actionOnGlobalItemsWithPrefix} from 'actions/storage';
 import EmojiMap from 'utils/emoji_map';
 import {getPostDraft} from 'selectors/rhs';
 
 import * as Utils from 'utils/utils.jsx';
-import {Constants, StoragePrefixes} from 'utils/constants.jsx';
+import {Constants, StoragePrefixes} from 'utils/constants';
 
 export function clearCommentDraftUploads() {
     return actionOnGlobalItemsWithPrefix(StoragePrefixes.COMMENT_DRAFT, (key, value) => {
@@ -59,14 +65,14 @@ export function makeOnMoveHistoryIndex(rootId, direction) {
 }
 
 export function submitPost(channelId, rootId, draft) {
-    return (dispatch, getState) => {
+    return async (dispatch, getState) => {
         const state = getState();
 
         const userId = getCurrentUserId(state);
 
         const time = Utils.getTimestamp();
 
-        const post = {
+        let post = {
             file_ids: [],
             message: draft.message,
             channel_id: channelId,
@@ -75,9 +81,18 @@ export function submitPost(channelId, rootId, draft) {
             pending_post_id: `${userId}:${time}`,
             user_id: userId,
             create_at: time,
+            metadata: {},
+            props: {},
         };
 
-        dispatch(PostActions.createPost(post, draft.fileInfos));
+        const hookResult = await dispatch(runMessageWillBePostedHooks(post));
+        if (hookResult.error) {
+            return {error: hookResult.error};
+        }
+
+        post = hookResult.data;
+
+        return dispatch(PostActions.createPost(post, draft.fileInfos));
     };
 }
 
@@ -97,24 +112,36 @@ export function submitCommand(channelId, rootId, draft) {
 
         const teamId = getCurrentTeamId(state);
 
-        const args = {
+        let args = {
             channel_id: channelId,
             team_id: teamId,
             root_id: rootId,
             parent_id: rootId,
         };
 
-        const {message} = draft;
+        let {message} = draft;
+
+        const hookResult = await dispatch(runSlashCommandWillBePostedHooks(message, args));
+        if (hookResult.error) {
+            return {error: hookResult.error};
+        } else if (!hookResult.data.message && !hookResult.data.args) {
+            // do nothing with an empty return from a hook
+            return {};
+        }
+
+        message = hookResult.data.message;
+        args = hookResult.data.args;
 
         const {error} = await dispatch(executeCommand(message, args));
 
         if (error) {
             if (error.sendMessage) {
-                dispatch(submitPost(channelId, rootId, draft));
-            } else {
-                throw (error);
+                return dispatch(submitPost(channelId, rootId, draft));
             }
+            throw (error);
         }
+
+        return {};
     };
 }
 
@@ -145,7 +172,7 @@ export function makeOnSubmit(channelId, rootId, latestPostId) {
 function makeGetCurrentUsersLatestPost(channelId, rootId) {
     return createSelector(
         getCurrentUserId,
-        (state) => state.entities.posts.postsInChannel[channelId],
+        (state) => getPostIdsInChannel(state, channelId),
         (state) => (id) => getPost(state, id),
         (userId, postIds, getPostById) => {
             let lastPost = null;
@@ -180,7 +207,7 @@ function makeGetCurrentUsersLatestPost(channelId, rootId) {
             }
 
             return lastPost;
-        }
+        },
     );
 }
 
@@ -202,7 +229,7 @@ export function makeOnEditLatestPost(channelId, rootId) {
             getCommentCount(state, {post: lastPost}),
             'reply_textbox',
             Utils.localizeMessage('create_comment.commentTitle', 'Comment'),
-            true
+            true,
         ));
     };
 }

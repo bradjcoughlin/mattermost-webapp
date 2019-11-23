@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import * as GlobalActions from 'actions/global_actions.jsx';
-import {Constants, ModalIdentifiers} from 'utils/constants.jsx';
+import {Constants, ModalIdentifiers} from 'utils/constants';
 import {cmdOrCtrlPressed, isKeyPressed} from 'utils/utils';
 
 import SidebarHeaderDropdownButton from '../sidebar_header_dropdown_button.jsx';
@@ -20,6 +20,7 @@ export default class SidebarHeaderDropdown extends React.PureComponent {
     static propTypes = {
         teamDescription: PropTypes.string.isRequired,
         teamDisplayName: PropTypes.string.isRequired,
+        teamId: PropTypes.string.isRequired,
         currentUser: PropTypes.object,
         showTutorialTip: PropTypes.bool.isRequired,
         actions: PropTypes.shape({
@@ -35,11 +36,6 @@ export default class SidebarHeaderDropdown extends React.PureComponent {
     toggleShortcutsModal = (e) => {
         e.preventDefault();
         GlobalActions.toggleShortcutsModal();
-    }
-
-    showGetTeamInviteLinkModal = (e) => {
-        e.preventDefault();
-        GlobalActions.showGetTeamInviteLinkModal();
     }
 
     componentDidMount() {
@@ -74,6 +70,7 @@ export default class SidebarHeaderDropdown extends React.PureComponent {
                     teamDescription={this.props.teamDescription}
                     currentUser={this.props.currentUser}
                     teamDisplayName={this.props.teamDisplayName}
+                    teamId={this.props.teamId}
                 />
                 <MainMenu id='sidebarDropdownMenu'/>
             </MenuWrapper>

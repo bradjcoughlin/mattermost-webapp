@@ -10,7 +10,7 @@ import {getInt} from 'mattermost-redux/selectors/entities/preferences';
 
 import {openModal} from 'actions/views/modals';
 
-import {Preferences, TutorialSteps} from 'utils/constants.jsx';
+import {Preferences, TutorialSteps} from 'utils/constants';
 import * as Utils from 'utils/utils.jsx';
 
 import SidebarHeaderDropdown from './sidebar_header_dropdown.jsx';
@@ -23,6 +23,7 @@ function mapStateToProps(state) {
         currentUser,
         teamDescription: currentTeam.description,
         teamDisplayName: currentTeam.display_name,
+        teamId: currentTeam.id,
         showTutorialTip,
     };
 }

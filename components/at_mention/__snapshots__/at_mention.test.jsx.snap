@@ -22,7 +22,9 @@ exports[`components/AtMention should match snapshot when mentioning current user
     show={false}
   >
     <Connect(InjectIntl(ProfilePopover))
+      className="user-profile-popover"
       hasMention={false}
+      hide={[Function]}
       isRHS={false}
       src="/api/v4/users/abc1/image"
       userId="abc1"
@@ -47,7 +49,9 @@ exports[`components/AtMention should match snapshot when mentioning user 1`] = `
     show={false}
   >
     <Connect(InjectIntl(ProfilePopover))
+      className="user-profile-popover"
       hasMention={false}
+      hide={[Function]}
       isRHS={false}
       src="/api/v4/users/abc2/image"
       userId="abc2"
@@ -72,7 +76,9 @@ exports[`components/AtMention should match snapshot when mentioning user contain
     show={false}
   >
     <Connect(InjectIntl(ProfilePopover))
+      className="user-profile-popover"
       hasMention={false}
+      hide={[Function]}
       isRHS={false}
       src="/api/v4/users/abc3/image"
       userId="abc3"
@@ -98,7 +104,9 @@ exports[`components/AtMention should match snapshot when mentioning user contain
     show={false}
   >
     <Connect(InjectIntl(ProfilePopover))
+      className="user-profile-popover"
       hasMention={false}
+      hide={[Function]}
       isRHS={false}
       src="/api/v4/users/abc3/image"
       userId="abc3"
@@ -123,7 +131,9 @@ exports[`components/AtMention should match snapshot when mentioning user followe
     show={false}
   >
     <Connect(InjectIntl(ProfilePopover))
+      className="user-profile-popover"
       hasMention={false}
+      hide={[Function]}
       isRHS={false}
       src="/api/v4/users/abc2/image"
       userId="abc2"
@@ -149,7 +159,9 @@ exports[`components/AtMention should match snapshot when mentioning user with di
     show={false}
   >
     <Connect(InjectIntl(ProfilePopover))
+      className="user-profile-popover"
       hasMention={false}
+      hide={[Function]}
       isRHS={false}
       src="/api/v4/users/abc2/image"
       userId="abc2"
@@ -174,7 +186,9 @@ exports[`components/AtMention should match snapshot when mentioning user with mi
     show={false}
   >
     <Connect(InjectIntl(ProfilePopover))
+      className="user-profile-popover"
       hasMention={false}
+      hide={[Function]}
       isRHS={false}
       src="/api/v4/users/abc2/image"
       userId="abc2"

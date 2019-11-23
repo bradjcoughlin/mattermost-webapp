@@ -11,6 +11,7 @@ exports[`components/multiselect/multiselect should match snapshot 1`] = `
       className="multi-select__container"
     >
       <StateManager
+        className=""
         components={
           Object {
             "IndicatorsContainer": [Function],
@@ -21,11 +22,13 @@ exports[`components/multiselect/multiselect should match snapshot 1`] = `
         defaultInputValue=""
         defaultMenuIsOpen={false}
         defaultValue={null}
+        getOptionLabel={[Function]}
         getOptionValue={[Function]}
         id="selectItems"
         inputValue=""
         isClearable={false}
         isMulti={true}
+        menuIsOpen={false}
         onChange={[Function]}
         onInputChange={[Function]}
         onKeyDown={[Function]}
@@ -66,7 +69,6 @@ exports[`components/multiselect/multiselect should match snapshot 1`] = `
             },
           ]
         }
-        placeholder="Search and add members"
         styles={
           Object {
             "container": [Function],
@@ -112,6 +114,7 @@ exports[`components/multiselect/multiselect should match snapshot 1`] = `
     />
   </div>
   <MultiSelectList
+    ariaLabelRenderer={[Function]}
     onAction={[Function]}
     onAdd={[Function]}
     onSelect={[Function]}
@@ -170,6 +173,7 @@ exports[`components/multiselect/multiselect should match snapshot for page 2 1`]
       className="multi-select__container"
     >
       <StateManager
+        className=""
         components={
           Object {
             "IndicatorsContainer": [Function],
@@ -180,11 +184,13 @@ exports[`components/multiselect/multiselect should match snapshot for page 2 1`]
         defaultInputValue=""
         defaultMenuIsOpen={false}
         defaultValue={null}
+        getOptionLabel={[Function]}
         getOptionValue={[Function]}
         id="selectItems"
         inputValue=""
         isClearable={false}
         isMulti={true}
+        menuIsOpen={false}
         onChange={[Function]}
         onInputChange={[Function]}
         onKeyDown={[Function]}
@@ -225,7 +231,6 @@ exports[`components/multiselect/multiselect should match snapshot for page 2 1`]
             },
           ]
         }
-        placeholder="Search and add members"
         styles={
           Object {
             "container": [Function],
@@ -271,6 +276,7 @@ exports[`components/multiselect/multiselect should match snapshot for page 2 1`]
     />
   </div>
   <MultiSelectList
+    ariaLabelRenderer={[Function]}
     onAction={[Function]}
     onAdd={[Function]}
     onSelect={[Function]}

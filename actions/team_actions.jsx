@@ -41,6 +41,28 @@ export function addUserToTeamFromInvite(token, inviteId) {
     };
 }
 
+export function addUserToTeam(teamId, userId) {
+    return async (dispatch) => {
+        const {data: member, error} = await dispatch(TeamActions.addUserToTeam(teamId, userId));
+        if (member) {
+            const {data} = await dispatch(TeamActions.getTeam(member.team_id));
+
+            dispatch({
+                type: TeamTypes.RECEIVED_MY_TEAM_MEMBER,
+                data: {
+                    ...member,
+                    delete_at: 0,
+                    msg_count: 0,
+                    mention_count: 0,
+                },
+            });
+
+            return {data};
+        }
+        return {error};
+    };
+}
+
 export function addUsersToTeam(teamId, userIds) {
     return async (dispatch, getState) => {
         const {data, error} = await dispatch(TeamActions.addUsersToTeam(teamId, userIds));

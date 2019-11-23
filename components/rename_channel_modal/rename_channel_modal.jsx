@@ -9,7 +9,7 @@ import {defineMessages, FormattedMessage, injectIntl, intlShape} from 'react-int
 import LocalizedInput from 'components/localized_input/localized_input';
 import {browserHistory} from 'utils/browser_history';
 import Constants from 'utils/constants.jsx';
-import {cleanUpUrlable, getShortenedURL} from 'utils/url.jsx';
+import {cleanUpUrlable, getShortenedURL} from 'utils/url';
 import * as Utils from 'utils/utils.jsx';
 import {t} from 'utils/i18n';
 
@@ -268,13 +268,19 @@ export class RenameChannelModal extends React.PureComponent {
 
         return (
             <Modal
+                dialogClassName='a11y__modal'
                 show={this.state.show}
                 onHide={this.handleCancel}
                 onEntering={this.handleEntering}
                 onExited={this.props.onHide}
+                role='dialog'
+                aria-labelledby='renameChannelModalLabel'
             >
                 <Modal.Header closeButton={true}>
-                    <Modal.Title>
+                    <Modal.Title
+                        componentClass='h1'
+                        id='renameChannelModalLabel'
+                    >
                         <FormattedMessage
                             id='rename_channel.title'
                             defaultMessage='Rename Channel'
@@ -307,7 +313,6 @@ export class RenameChannelModal extends React.PureComponent {
 
                             <div className='input-group input-group--limit'>
                                 <OverlayTrigger
-                                    trigger={['hover', 'focus']}
                                     delayShow={Constants.OVERLAY_TIME_DELAY}
                                     placement='top'
                                     overlay={urlTooltip}

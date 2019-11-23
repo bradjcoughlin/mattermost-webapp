@@ -13,11 +13,15 @@ $gray: rgba(0, 0, 0, .3);
 $dark-gray: rgba(0, 0, 0, .5);
 $link-color: rgb(35, 137, 215);
 $transparent: rgba(0, 0, 0, 0);
+$highlight-color: #fcea8d;
 
 // Page Variables
 $border-gray: 1px solid #ddd;
-$announcement-bar-height: 24px;
+$announcement-bar-height: 32px;
 
 // Random variables
 $border-rad: 2px;
 $emoji-per-row: 9; // needs to match variable `EMOJI_PER_ROW` in emoji_picker.jsx
+
+// Transition timing defaults
+$transition-quick: 0.12s;

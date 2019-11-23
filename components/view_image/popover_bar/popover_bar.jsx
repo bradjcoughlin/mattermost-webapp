@@ -7,7 +7,6 @@ import {FormattedMessage} from 'react-intl';
 
 export default class PopoverBar extends React.PureComponent {
     static propTypes = {
-        show: PropTypes.bool.isRequired,
         fileIndex: PropTypes.number.isRequired,
         totalFiles: PropTypes.number.isRequired,
         filename: PropTypes.string.isRequired,
@@ -21,7 +20,6 @@ export default class PopoverBar extends React.PureComponent {
     };
 
     static defaultProps = {
-        show: false,
         fileIndex: 0,
         totalFiles: 0,
         filename: '',
@@ -50,15 +48,13 @@ export default class PopoverBar extends React.PureComponent {
             );
         }
 
-        var footerClass = 'modal-button-bar';
-        if (this.props.show) {
-            footerClass += ' footer--show';
-        }
-
         let downloadLinks = null;
         if (this.props.canDownloadFiles) {
+            const shouldOpenFile = this.props.isExternalFile && !this.props.isDesktopApp;
+
             let downloadLinkText;
-            if (this.props.isExternalFile && !this.props.isDesktopApp) {
+            const downloadLinkProps = {};
+            if (shouldOpenFile) {
                 downloadLinkText = (
                     <FormattedMessage
                         id='view_image_popover.open'
@@ -72,6 +68,8 @@ export default class PopoverBar extends React.PureComponent {
                         defaultMessage='Download'
                     />
                 );
+
+                downloadLinkProps.download = this.props.filename;
             }
 
             downloadLinks = (
@@ -79,10 +77,10 @@ export default class PopoverBar extends React.PureComponent {
                     {publicLink}
                     <a
                         href={this.props.fileURL}
-                        download={this.props.filename}
                         className='text'
                         target='_blank'
                         rel='noopener noreferrer'
+                        {...downloadLinkProps}
                     >
                         {downloadLinkText}
                     </a>
@@ -93,7 +91,7 @@ export default class PopoverBar extends React.PureComponent {
         return (
             <div
                 ref='imageFooter'
-                className={footerClass}
+                className='modal-button-bar'
             >
                 <span className='pull-left text'>
                     <FormattedMessage

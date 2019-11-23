@@ -93,4 +93,38 @@ describe('components/SuggestionBox', () => {
         wrapper.setProps({...baseProps, contextId: 'new'});
         expect(instance.handlePretextChanged.mock.calls.length).toBe(1);
     });
+
+    test('should force pretext change after text has been cleared by parent', async () => {
+        const wrapper = shallow(
+            <SuggestionBox
+                {...baseProps}
+            />
+        );
+        const instance = wrapper.instance();
+        instance.handlePretextChanged = jest.fn();
+        instance.pretext = 'value';
+
+        wrapper.setProps({...baseProps});
+        expect(instance.handlePretextChanged).not.toBeCalled();
+
+        wrapper.setProps({...baseProps, value: ''});
+        expect(instance.handlePretextChanged).toBeCalledWith('');
+    });
+
+    test('should force pretext change on composition update', () => {
+        const wrapper = shallow(
+            <SuggestionBox
+                {...baseProps}
+            />
+        );
+        const instance = wrapper.instance();
+        instance.handlePretextChanged = jest.fn();
+        instance.getTextbox = jest.fn().mockReturnValue({value: ''});
+
+        instance.handleCompositionUpdate({data: '@ㅈ'});
+        expect(instance.handlePretextChanged).toBeCalledWith('@ㅈ');
+
+        instance.handleCompositionUpdate({data: '@저'});
+        expect(instance.handlePretextChanged).toBeCalledWith('@저');
+    });
 });

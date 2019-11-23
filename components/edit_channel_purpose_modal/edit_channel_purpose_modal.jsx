@@ -7,7 +7,7 @@ import {Modal} from 'react-bootstrap';
 import {FormattedMessage} from 'react-intl';
 import {RequestStatus} from 'mattermost-redux/constants';
 
-import Constants from 'utils/constants.jsx';
+import Constants from 'utils/constants';
 import * as Utils from 'utils/utils.jsx';
 
 export default class EditChannelPurposeModal extends React.PureComponent {
@@ -180,13 +180,19 @@ export default class EditChannelPurposeModal extends React.PureComponent {
 
         return (
             <Modal
+                dialogClassName='a11y__modal'
                 show={this.state.show}
                 onHide={this.onHide}
                 onEntering={this.handleEntering}
                 onExited={this.props.onHide}
+                role='dialog'
+                aria-labelledby='editChannelPurposeModalLabel'
             >
                 <Modal.Header closeButton={true}>
-                    <Modal.Title>
+                    <Modal.Title
+                        componentClass='h1'
+                        id='editChannelPurposeModalLabel'
+                    >
                         {title}
                     </Modal.Title>
                 </Modal.Header>

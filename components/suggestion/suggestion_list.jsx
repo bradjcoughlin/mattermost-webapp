@@ -7,16 +7,19 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import {FormattedMessage} from 'react-intl';
 
+import {isEmptyObject} from 'utils/utils.jsx';
 import FormattedMarkdownMessage from 'components/formatted_markdown_message';
-import LoadingSpinner from 'components/widgets/loading/loading_spinner.jsx';
+import LoadingSpinner from 'components/widgets/loading/loading_spinner';
 
 export default class SuggestionList extends React.PureComponent {
     static propTypes = {
+        ariaLiveRef: PropTypes.object,
         open: PropTypes.bool.isRequired,
         location: PropTypes.string,
         renderDividers: PropTypes.bool,
         renderNoResults: PropTypes.bool,
         onCompleteWord: PropTypes.func.isRequired,
+        preventClose: PropTypes.func,
         pretext: PropTypes.string.isRequired,
         cleared: PropTypes.bool.isRequired,
         matchedPretext: PropTypes.array.isRequired,
@@ -24,8 +27,6 @@ export default class SuggestionList extends React.PureComponent {
         terms: PropTypes.array.isRequired,
         selection: PropTypes.string.isRequired,
         components: PropTypes.array.isRequired,
-        dropdownPosition: PropTypes.number,
-        inputWidth: PropTypes.number,
     };
 
     static defaultProps = {
@@ -36,22 +37,64 @@ export default class SuggestionList extends React.PureComponent {
     constructor(props) {
         super(props);
 
-        this.getContent = this.getContent.bind(this);
-
-        this.scrollToItem = this.scrollToItem.bind(this);
+        this.suggestionReadOut = React.createRef();
+        this.currentLabel = '';
+        this.currentItem = {};
     }
 
     componentDidUpdate(prevProps) {
         if (this.props.selection !== prevProps.selection && this.props.selection) {
             this.scrollToItem(this.props.selection);
         }
+
+        if (!isEmptyObject(this.currentItem)) {
+            this.generateLabel(this.currentItem);
+        }
     }
 
-    getContent() {
+    componentWillUnmount() {
+        this.removeLabel();
+    }
+
+    announceLabel() {
+        const suggestionReadOut = this.props.ariaLiveRef.current;
+        if (suggestionReadOut) {
+            suggestionReadOut.innerHTML = this.currentLabel;
+        }
+    }
+
+    removeLabel() {
+        const suggestionReadOut = this.props.ariaLiveRef.current;
+        if (suggestionReadOut) {
+            suggestionReadOut.innerHTML = '';
+        }
+    }
+
+    generateLabel(item) {
+        if (item.username) {
+            this.currentLabel = item.username;
+            if ((item.first_name || item.last_name) && item.nickname) {
+                this.currentLabel += ` ${item.first_name} ${item.last_name} ${item.nickname}`;
+            } else if (item.nickname) {
+                this.currentLabel += ` ${item.nickname}`;
+            } else if (item.first_name || item.last_name) {
+                this.currentLabel += ` ${item.first_name} ${item.last_name}`;
+            }
+        } else if (item.type === 'mention.channels') {
+            this.currentLabel = item.channel.display_name;
+        }
+
+        if (this.currentLabel) {
+            this.currentLabel = this.currentLabel.toLowerCase();
+        }
+        this.announceLabel();
+    }
+
+    getContent = () => {
         return $(ReactDOM.findDOMNode(this.refs.content));
     }
 
-    scrollToItem(term) {
+    scrollToItem = (term) => {
         const content = this.getContent();
         if (!content || content.length === 0) {
             return;
@@ -147,6 +190,10 @@ export default class SuggestionList extends React.PureComponent {
                 continue;
             }
 
+            if (isSelection) {
+                this.currentItem = item;
+            }
+
             items.push(
                 <Component
                     key={term}
@@ -163,20 +210,13 @@ export default class SuggestionList extends React.PureComponent {
         const mainClass = 'suggestion-list suggestion-list--' + this.props.location;
         const contentClass = 'suggestion-list__content suggestion-list__content--' + this.props.location;
 
-        let style = {};
-        if (this.props.dropdownPosition && this.props.location === 'bottom') {
-            style = {top: this.props.dropdownPosition + 5, width: this.props.inputWidth};
-        }
-
         return (
-            <div
-                className={mainClass}
-                style={style}
-            >
+            <div className={mainClass}>
                 <div
                     id='suggestionList'
                     ref='content'
                     className={contentClass}
+                    onMouseDown={this.props.preventClose}
                 >
                     {items}
                 </div>

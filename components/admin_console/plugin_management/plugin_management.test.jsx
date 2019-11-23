@@ -14,6 +14,12 @@ describe('components/PluginManagement', () => {
             PluginSettings: {
                 Enable: true,
                 EnableUploads: true,
+                AllowInsecureDownloadUrl: false,
+                EnableMarketplace: true,
+                MarketplaceUrl: 'marketplace.example.com',
+            },
+            ExperimentalSettings: {
+                RestrictSystemAdmin: false,
             },
         },
         pluginStatuses: {
@@ -85,7 +91,9 @@ describe('components/PluginManagement', () => {
         },
         actions: {
             uploadPlugin: jest.fn(),
+            installPluginFromUrl: jest.fn(),
             removePlugin: jest.fn(),
+            getPlugins: jest.fn().mockResolvedValue([]),
             getPluginStatuses: jest.fn().mockResolvedValue([]),
             enablePlugin: jest.fn(),
             disablePlugin: jest.fn(),
@@ -113,6 +121,20 @@ describe('components/PluginManagement', () => {
         expect(wrapper).toMatchSnapshot();
     });
 
+    test('should match snapshot when `Enable Plugins` is hidden', () => {
+        const props = {
+            ...defaultProps,
+            config: {
+                ...defaultProps.config,
+                ExperimentalSettings: {
+                    RestrictSystemAdmin: true,
+                },
+            },
+        };
+        const wrapper = shallow(<PluginManagement {...props}/>);
+        expect(wrapper).toMatchSnapshot();
+    });
+
     test('should match snapshot, upload disabled', () => {
         const props = {
             ...defaultProps,
@@ -128,19 +150,47 @@ describe('components/PluginManagement', () => {
         expect(wrapper).toMatchSnapshot();
     });
 
+    test('should match snapshot, allow insecure URL enabled', () => {
+        const props = {
+            ...defaultProps,
+            config: {
+                ...defaultProps.config,
+                PluginSettings: {
+                    ...defaultProps.config.PluginSettings,
+                    AllowInsecureDownloadUrl: true,
+                },
+            },
+        };
+        const wrapper = shallow(<PluginManagement {...props}/>);
+        expect(wrapper).toMatchSnapshot();
+    });
+
+    test('should match snapshot, text entered into the URL install text box', () => {
+        const props = defaultProps;
+
+        const wrapper = shallow(<PluginManagement {...props}/>);
+        wrapper.setState({pluginDownloadUrl: 'https://pluginsite.com/plugin.tar.gz'});
+        expect(wrapper).toMatchSnapshot();
+    });
+
     test('should match snapshot, No installed plugins', () => {
         const props = {
             config: {
+                ...defaultProps.config,
                 PluginSettings: {
+                    ...defaultProps.config.PluginSettings,
                     Enable: true,
                     EnableUploads: true,
+                    AllowInsecureDownloadUrl: false,
                 },
             },
             pluginStatuses: {},
             plugins: {},
             actions: {
                 uploadPlugin: jest.fn(),
+                installPluginFromUrl: jest.fn(),
                 removePlugin: jest.fn(),
+                getPlugins: jest.fn().mockResolvedValue([]),
                 getPluginStatuses: jest.fn().mockResolvedValue([]),
                 enablePlugin: jest.fn(),
                 disablePlugin: jest.fn(),
@@ -160,9 +210,12 @@ describe('components/PluginManagement', () => {
     test('should match snapshot, with installed plugins and not settings link should set hasSettings to false', () => {
         const props = {
             config: {
+                ...defaultProps.config,
                 PluginSettings: {
+                    ...defaultProps.config.PluginSettings,
                     Enable: true,
                     EnableUploads: true,
+                    AllowInsecureDownloadUrl: false,
                 },
             },
             pluginStatuses: {
@@ -226,7 +279,9 @@ describe('components/PluginManagement', () => {
             },
             actions: {
                 uploadPlugin: jest.fn(),
+                installPluginFromUrl: jest.fn(),
                 removePlugin: jest.fn(),
+                getPlugins: jest.fn().mockResolvedValue([]),
                 getPluginStatuses: jest.fn().mockResolvedValue([]),
                 enablePlugin: jest.fn(),
                 disablePlugin: jest.fn(),
@@ -240,9 +295,12 @@ describe('components/PluginManagement', () => {
     test('should match snapshot, with installed plugins and just header should set hasSettings to true', () => {
         const props = {
             config: {
+                ...defaultProps.config,
                 PluginSettings: {
+                    ...defaultProps.config.PluginSettings,
                     Enable: true,
                     EnableUploads: true,
+                    AllowInsecureDownloadUrl: false,
                 },
             },
             pluginStatuses: {
@@ -278,7 +336,9 @@ describe('components/PluginManagement', () => {
             },
             actions: {
                 uploadPlugin: jest.fn(),
+                installPluginFromUrl: jest.fn(),
                 removePlugin: jest.fn(),
+                getPlugins: jest.fn().mockResolvedValue([]),
                 getPluginStatuses: jest.fn().mockResolvedValue([]),
                 enablePlugin: jest.fn(),
                 disablePlugin: jest.fn(),
@@ -292,9 +352,12 @@ describe('components/PluginManagement', () => {
     test('should match snapshot, with installed plugins and just footer should set hasSettings to true', () => {
         const props = {
             config: {
+                ...defaultProps.config,
                 PluginSettings: {
+                    ...defaultProps.config.PluginSettings,
                     Enable: true,
                     EnableUploads: true,
+                    AllowInsecureDownloadUrl: false,
                 },
             },
             pluginStatuses: {
@@ -330,7 +393,9 @@ describe('components/PluginManagement', () => {
             },
             actions: {
                 uploadPlugin: jest.fn(),
+                installPluginFromUrl: jest.fn(),
                 removePlugin: jest.fn(),
+                getPlugins: jest.fn().mockResolvedValue([]),
                 getPluginStatuses: jest.fn().mockResolvedValue([]),
                 enablePlugin: jest.fn(),
                 disablePlugin: jest.fn(),
@@ -344,9 +409,12 @@ describe('components/PluginManagement', () => {
     test('should match snapshot, with installed plugins and just settings should set hasSettings to true', () => {
         const props = {
             config: {
+                ...defaultProps.config,
                 PluginSettings: {
+                    ...defaultProps.config.PluginSettings,
                     Enable: true,
                     EnableUploads: true,
+                    AllowInsecureDownloadUrl: false,
                 },
             },
             pluginStatuses: {
@@ -384,7 +452,9 @@ describe('components/PluginManagement', () => {
             },
             actions: {
                 uploadPlugin: jest.fn(),
+                installPluginFromUrl: jest.fn(),
                 removePlugin: jest.fn(),
+                getPlugins: jest.fn().mockResolvedValue([]),
                 getPluginStatuses: jest.fn().mockResolvedValue([]),
                 enablePlugin: jest.fn(),
                 disablePlugin: jest.fn(),

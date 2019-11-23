@@ -25,6 +25,11 @@ export default class ViewImageModal extends React.PureComponent {
     static propTypes = {
 
         /**
+         * The post the files are attached to
+         */
+        post: PropTypes.object.isRequired,
+
+        /**
          * Set whether to show this modal or not
          */
         show: PropTypes.bool.isRequired,
@@ -46,12 +51,14 @@ export default class ViewImageModal extends React.PureComponent {
 
         canDownloadFiles: PropTypes.bool.isRequired,
         enablePublicLink: PropTypes.bool.isRequired,
+        pluginFilePreviewComponents: PropTypes.arrayOf(PropTypes.object),
     };
 
     static defaultProps = {
         show: false,
         fileInfos: [],
         startIndex: 0,
+        pluginFilePreviewComponents: [],
     };
 
     constructor(props) {
@@ -62,7 +69,7 @@ export default class ViewImageModal extends React.PureComponent {
             imageHeight: '100%',
             loaded: Utils.fillArray(false, this.props.fileInfos.length),
             progress: Utils.fillArray(0, this.props.fileInfos.length),
-            showFooter: false,
+            showCloseBtn: false,
         };
     }
 
@@ -189,11 +196,11 @@ export default class ViewImageModal extends React.PureComponent {
     }
 
     onMouseEnterImage = () => {
-        this.setState({showFooter: true});
+        this.setState({showCloseBtn: true});
     }
 
     onMouseLeaveImage = () => {
-        this.setState({showFooter: false});
+        this.setState({showCloseBtn: false});
     }
 
     render() {
@@ -262,6 +269,18 @@ export default class ViewImageModal extends React.PureComponent {
             );
         }
 
+        for (const preview of this.props.pluginFilePreviewComponents) {
+            if (preview.override(fileInfo, this.props.post)) {
+                content = (
+                    <preview.component
+                        fileInfo={fileInfo}
+                        post={this.props.post}
+                    />
+                );
+                break;
+            }
+        }
+
         let leftArrow = null;
         let rightArrow = null;
         if (this.props.fileInfos.length > 1) {
@@ -291,7 +310,7 @@ export default class ViewImageModal extends React.PureComponent {
         }
 
         let closeButtonClass = 'modal-close';
-        if (this.state.showFooter) {
+        if (this.state.showCloseBtn) {
             closeButtonClass += ' modal-close--show';
         }
 
@@ -300,7 +319,9 @@ export default class ViewImageModal extends React.PureComponent {
                 show={this.props.show}
                 onHide={this.props.onModalDismissed}
                 className='modal-image'
-                dialogClassName='modal-image'
+                dialogClassName='a11y__modal modal-image'
+                role='dialog'
+                aria-labelledby='viewImageModalLabel'
             >
                 <Modal.Body>
                     <div
@@ -312,6 +333,13 @@ export default class ViewImageModal extends React.PureComponent {
                             onMouseLeave={this.onMouseLeaveImage}
                             onClick={(e) => e.stopPropagation()}
                         >
+                            <Modal.Title
+                                componentClass='h1'
+                                id='viewImageModalLabel'
+                                className='hide'
+                            >
+                                {fileName}
+                            </Modal.Title>
                             <div
                                 className={closeButtonClass}
                                 onClick={this.props.onModalDismissed}
@@ -320,7 +348,6 @@ export default class ViewImageModal extends React.PureComponent {
                                 {content}
                             </div>
                             <PopoverBar
-                                show={this.state.showFooter}
                                 showPublicLink={showPublicLink}
                                 fileIndex={this.state.imageIndex}
                                 totalFiles={this.props.fileInfos.length}

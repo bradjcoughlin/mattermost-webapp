@@ -3,11 +3,17 @@
 
 import PropTypes from 'prop-types';
 import React from 'react';
-import {FormattedDate} from 'react-intl';
+
+import RecentDate from 'components/recent_date';
+
+import BasicSeparator from 'components/widgets/separator/basic-separator';
 
 export default class DateSeparator extends React.PureComponent {
     static propTypes = {
-        date: PropTypes.instanceOf(Date),
+        date: PropTypes.oneOfType([
+            PropTypes.number,
+            PropTypes.instanceOf(Date),
+        ]).isRequired,
         timeZone: PropTypes.string,
         enableTimezone: PropTypes.bool,
     }
@@ -21,21 +27,16 @@ export default class DateSeparator extends React.PureComponent {
         const timezoneProps = enableTimezone && timeZone ? {timeZone} : {};
 
         return (
-            <div
-                className='date-separator'
-            >
-                <hr className='separator__hr'/>
-                <div className='separator__text'>
-                    <FormattedDate
-                        {...timezoneProps}
-                        value={date}
-                        weekday='short'
-                        month='short'
-                        day='2-digit'
-                        year='numeric'
-                    />
-                </div>
-            </div>
+            <BasicSeparator>
+                <RecentDate
+                    {...timezoneProps}
+                    value={date}
+                    weekday='short'
+                    month='short'
+                    day='2-digit'
+                    year='numeric'
+                />
+            </BasicSeparator>
         );
     }
 }

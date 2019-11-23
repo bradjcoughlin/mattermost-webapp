@@ -8,7 +8,7 @@ import {shallowWithIntl} from 'tests/helpers/intl-test-helper.jsx';
 import * as GlobalActions from 'actions/global_actions.jsx';
 import EmojiMap from 'utils/emoji_map';
 
-import Constants, {StoragePrefixes, ModalIdentifiers} from 'utils/constants.jsx';
+import Constants, {StoragePrefixes, ModalIdentifiers} from 'utils/constants';
 import * as Utils from 'utils/utils.jsx';
 
 import CreatePost from 'components/create_post/create_post.jsx';
@@ -19,7 +19,6 @@ jest.mock('actions/global_actions.jsx', () => ({
     emitUserPostedEvent: jest.fn(),
     showChannelNameUpdateModal: jest.fn(),
     toggleShortcutsModal: jest.fn(),
-    postListScrollChange: jest.fn(),
 }));
 
 jest.mock('react-dom', () => ({
@@ -62,25 +61,32 @@ const currentUsersLatestPostProp = {id: 'b', root_id: 'a', channel_id: currentCh
 
 const commentCountForPostProp = 10;
 
-function emptyFunction() {} //eslint-disable-line no-empty-function
 const actionsProp = {
-    addMessageIntoHistory: emptyFunction,
-    moveHistoryIndexBack: emptyFunction,
-    moveHistoryIndexForward: emptyFunction,
-    addReaction: emptyFunction,
-    removeReaction: emptyFunction,
-    clearDraftUploads: emptyFunction,
-    onSubmitPost: emptyFunction,
-    selectPostFromRightHandSideSearchByPostId: emptyFunction,
-    setDraft: emptyFunction,
-    setEditingPost: emptyFunction,
-    openModal: emptyFunction,
+    addMessageIntoHistory: jest.fn(),
+    moveHistoryIndexBack: jest.fn(),
+    moveHistoryIndexForward: jest.fn(),
+    addReaction: jest.fn(),
+    removeReaction: jest.fn(),
+    clearDraftUploads: jest.fn(),
+    onSubmitPost: jest.fn(),
+    selectPostFromRightHandSideSearchByPostId: jest.fn(),
+    setDraft: jest.fn(),
+    setEditingPost: jest.fn(),
+    openModal: jest.fn(),
     executeCommand: async () => {
         return {data: true};
     },
-    getChannelTimezones: emptyFunction,
+    getChannelTimezones: jest.fn(),
+    runMessageWillBePostedHooks: async (post) => {
+        return {data: post};
+    },
+    runSlashCommandWillBePostedHooks: async (message, args) => {
+        return {data: {message, args}};
+    },
+    scrollPostListToBottom: jest.fn(),
 };
 
+/* eslint-disable react/prop-types */
 function createPost({
     currentChannel = currentChannelProp,
     currentTeamId = currentTeamIdProp,
@@ -131,6 +137,7 @@ function createPost({
         />
     );
 }
+/* eslint-enable react/prop-types */
 
 describe('components/create_post', () => {
     it('should match snapshot, init', () => {
@@ -181,17 +188,24 @@ describe('components/create_post', () => {
 
     it('click toggleEmojiPicker', () => {
         const wrapper = shallowWithIntl(createPost());
-        wrapper.find('.icon.icon--emoji').simulate('click');
+        wrapper.find('.emoji-picker__container').simulate('click');
         expect(wrapper.state('showEmojiPicker')).toBe(true);
-        wrapper.find('.icon.icon--emoji').simulate('click');
+        wrapper.find('.emoji-picker__container').simulate('click');
         wrapper.find('EmojiPickerOverlay').prop('onHide')();
         expect(wrapper.state('showEmojiPicker')).toBe(false);
     });
 
     it('Check for emoji click message states', () => {
         const wrapper = shallowWithIntl(createPost());
+        const mockImpl = () => {
+            return {
+                setSelectionRange: jest.fn(),
+                focus: jest.fn(),
+            };
+        };
+        wrapper.instance().refs = {textbox: {getWrappedInstance: () => ({getInputBox: jest.fn(mockImpl), focus: jest.fn()})}};
 
-        wrapper.find('.icon.icon--emoji').simulate('click');
+        wrapper.find('.emoji-picker__container').simulate('click');
         expect(wrapper.state('showEmojiPicker')).toBe(true);
 
         wrapper.instance().handleEmojiClick({name: 'smile'});
@@ -199,6 +213,7 @@ describe('components/create_post', () => {
 
         wrapper.setState({
             message: 'test',
+            caretPosition: 'test'.length, // cursor is at the end
         });
 
         wrapper.instance().handleEmojiClick({name: 'smile'});
@@ -209,7 +224,7 @@ describe('components/create_post', () => {
         });
 
         wrapper.instance().handleEmojiClick({name: 'smile'});
-        expect(wrapper.state('message')).toBe('test :smile: ');
+        expect(wrapper.state('message')).toBe('test  :smile: ');
     });
 
     it('onChange textbox should call setDraft and change message state', () => {
@@ -236,6 +251,10 @@ describe('components/create_post', () => {
     it('onKeyPress textbox should call emitLocalUserTypingEvent', () => {
         const wrapper = shallowWithIntl(createPost());
         wrapper.instance().refs = {textbox: {getWrappedInstance: () => ({blur: jest.fn()})}};
+
+        wrapper.setState({
+            showPreview: false,
+        });
 
         const postTextbox = wrapper.find('#post_textbox');
         postTextbox.simulate('KeyPress', {key: KeyCodes.ENTER[0], preventDefault: jest.fn(), persist: jest.fn()});
@@ -376,7 +395,7 @@ describe('components/create_post', () => {
         expect(GlobalActions.showChannelNameUpdateModal).toHaveBeenCalledWith(currentChannelProp);
     });
 
-    it('onSubmit test for "/unknown" message ', () => {
+    it('onSubmit test for "/unknown" message ', async () => {
         jest.mock('actions/channel_actions.jsx', () => ({
             executeCommand: jest.fn((message, _args, resolve) => resolve()),
         }));
@@ -387,12 +406,11 @@ describe('components/create_post', () => {
             message: '/unknown',
         });
 
-        const form = wrapper.find('#create_post');
-        form.simulate('Submit', {preventDefault: jest.fn()});
+        await wrapper.instance().handleSubmit({preventDefault: jest.fn()});
         expect(wrapper.state('submitting')).toBe(false);
     });
 
-    it('onSubmit test for addReaction message', () => {
+    it('onSubmit test for addReaction message', async () => {
         const addReaction = jest.fn();
 
         const wrapper = shallowWithIntl(
@@ -408,8 +426,7 @@ describe('components/create_post', () => {
             message: '+:smile:',
         });
 
-        const form = wrapper.find('#create_post');
-        form.simulate('Submit', {preventDefault: jest.fn()});
+        await wrapper.instance().handleSubmit({preventDefault: jest.fn()});
         expect(addReaction).toHaveBeenCalledWith('a', 'smile');
     });
 
@@ -716,7 +733,7 @@ describe('components/create_post', () => {
         expect(wrapper.state('showPostDeletedModal')).toBe(false);
     });
 
-    it('Should have called actions.onSubmitPost on sendMessage', () => {
+    it('Should have called actions.onSubmitPost on sendMessage', async () => {
         const onSubmitPost = jest.fn();
         const wrapper = shallowWithIntl(createPost({
             actions: {
@@ -725,7 +742,7 @@ describe('components/create_post', () => {
             },
         }));
         const post = {message: 'message', file_ids: []};
-        wrapper.instance().sendMessage(post);
+        await wrapper.instance().sendMessage(post);
 
         expect(onSubmitPost).toHaveBeenCalledTimes(1);
         expect(onSubmitPost.mock.calls[0][0]).toEqual(post);
@@ -835,7 +852,7 @@ describe('components/create_post', () => {
         });
         expect(wrapper.find('[id="postServerError"]').exists()).toBe(false);
 
-        wrapper.instance().handleSubmit({preventDefault: jest.fn()});
+        await wrapper.instance().handleSubmit({preventDefault: jest.fn()});
 
         expect(onSubmitPost).toHaveBeenCalledWith(
             expect.objectContaining({
@@ -893,5 +910,26 @@ describe('components/create_post', () => {
 
         wrapper.instance().pasteHandler(event);
         expect(wrapper.state('message')).toBe(expectedMessage);
+    });
+
+    it('should not enable the save button when message empty', () => {
+        const wrapper = shallowWithIntl(createPost());
+        const saveButton = wrapper.find('.post-body__actions a');
+
+        expect(saveButton.hasClass('disabled')).toBe(true);
+    });
+
+    it('should enable the save button when message not empty', () => {
+        const wrapper = shallowWithIntl(createPost({draft: {...draftProp, message: 'a message'}}));
+        const saveButton = wrapper.find('.post-body__actions a');
+
+        expect(saveButton.hasClass('disabled')).toBe(false);
+    });
+
+    it('should enable the save button when a file is available for upload', () => {
+        const wrapper = shallowWithIntl(createPost({draft: {...draftProp, fileInfos: [{id: '1'}]}}));
+        const saveButton = wrapper.find('.post-body__actions a');
+
+        expect(saveButton.hasClass('disabled')).toBe(false);
     });
 });

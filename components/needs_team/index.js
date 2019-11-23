@@ -5,8 +5,9 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {withRouter} from 'react-router-dom';
 
+import {loadProfilesForDirect} from 'mattermost-redux/actions/users';
 import {fetchMyChannelsAndMembers, markChannelAsRead, viewChannel} from 'mattermost-redux/actions/channels';
-import {getMyTeamUnreads, getTeams, joinTeam, selectTeam} from 'mattermost-redux/actions/teams';
+import {getMyTeamUnreads, getTeamByName, selectTeam} from 'mattermost-redux/actions/teams';
 import {getTheme} from 'mattermost-redux/selectors/entities/preferences';
 import {getLicense, getConfig} from 'mattermost-redux/selectors/entities/general';
 import {getCurrentUser} from 'mattermost-redux/selectors/entities/users';
@@ -15,6 +16,7 @@ import {getCurrentChannelId} from 'mattermost-redux/selectors/entities/channels'
 
 import {loadStatusesForChannelAndSidebar} from 'actions/status_actions';
 import {setPreviousTeamId} from 'actions/local_storage';
+import {addUserToTeam} from 'actions/team_actions';
 import {checkIfMFARequired} from 'utils/route';
 
 import NeedsTeam from './needs_team.jsx';
@@ -41,11 +43,12 @@ function mapDispatchToProps(dispatch) {
             getMyTeamUnreads,
             viewChannel,
             markChannelAsRead,
-            getTeams,
-            joinTeam,
+            getTeamByName,
+            addUserToTeam,
             setPreviousTeamId,
             selectTeam,
             loadStatusesForChannelAndSidebar,
+            loadProfilesForDirect,
         }, dispatch),
     };
 }

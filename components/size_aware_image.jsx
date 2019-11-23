@@ -4,10 +4,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import {localizeMessage} from 'utils/utils.jsx';
 import LoadingImagePreview from 'components/loading_image_preview';
-import {createPlaceholderImage, loadImage} from 'utils/image_utils';
-
-const WAIT_FOR_HEIGHT_TIMEOUT = 100;
 
 // SizeAwareImage is a component used for rendering images where the dimensions of the image are important for
 // ensuring that the page is laid out correctly.
@@ -23,6 +21,7 @@ export default class SizeAwareImage extends React.PureComponent {
          * dimensions object to create empty space required to prevent scroll pop
          */
         dimensions: PropTypes.object,
+        fileInfo: PropTypes.object,
 
         /*
          * Boolean value to pass for showing a loader when image is being loaded
@@ -38,6 +37,16 @@ export default class SizeAwareImage extends React.PureComponent {
          * A callback that is called when image load fails
          */
         onImageLoadFail: PropTypes.func,
+
+        /*
+         * Fetch the onClick function
+         */
+        onClick: PropTypes.func,
+
+        /*
+         * css classes that can added to the img as well as parent div on svg for placeholder
+         */
+        className: PropTypes.string,
     }
 
     constructor(props) {
@@ -52,54 +61,17 @@ export default class SizeAwareImage extends React.PureComponent {
 
     componentDidMount() {
         this.mounted = true;
-        this.loadImage();
-    }
-
-    componentDidUpdate(prevProps) {
-        if (this.props.src !== prevProps.src) {
-            this.loadImage();
-        }
     }
 
     componentWillUnmount() {
         this.mounted = false;
-        this.stopWaitingForHeight();
     }
 
-    loadImage = () => {
-        const image = loadImage(this.props.src, this.handleLoad);
-
-        image.onerror = this.handleError();
-
-        if (!this.props.dimensions) {
-            this.waitForHeight(image);
-        }
-    }
-
-    waitForHeight = (image) => {
-        if (image && image.height) {
-            if (this.props.onImageLoaded) {
-                this.props.onImageLoaded({height: image.height, width: image.width});
-            }
-            this.heightTimeout = 0;
-        } else {
-            this.heightTimeout = setTimeout(() => this.waitForHeight(image), WAIT_FOR_HEIGHT_TIMEOUT);
-        }
-    }
-
-    stopWaitingForHeight = () => {
-        if (this.heightTimeout !== 0) {
-            clearTimeout(this.heightTimeout);
-            this.heightTimeout = 0;
-            return true;
-        }
-        return false;
-    }
-
-    handleLoad = (image) => {
+    handleLoad = (event) => {
         if (this.mounted) {
-            if (this.props.onImageLoaded && image.height) {
-                this.props.onImageLoaded({height: image.height, width: image.width});
+            const image = event.target;
+            if (this.props.onImageLoaded && image.naturalHeight) {
+                this.props.onImageLoaded({height: image.naturalHeight, width: image.naturalWidth});
             }
             this.setState({
                 loaded: true,
@@ -110,7 +82,6 @@ export default class SizeAwareImage extends React.PureComponent {
 
     handleError = () => {
         if (this.mounted) {
-            this.stopWaitingForHeight();
             if (this.props.onImageLoadFail) {
                 this.props.onImageLoadFail();
             }
@@ -118,40 +89,91 @@ export default class SizeAwareImage extends React.PureComponent {
         }
     };
 
-    render() {
+    onEnterKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            this.props.onClick(e);
+        }
+    }
+
+    renderImageLoaderIfNeeded = () => {
+        if (!this.state.loaded && this.props.showLoader && !this.state.error) {
+            return (
+                <div style={{position: 'absolute', top: '50%', transform: 'translate(-50%, -50%)', left: '50%'}}>
+                    <LoadingImagePreview
+                        containerClass={'file__image-loading'}
+                    />
+                </div>
+            );
+        }
+        return null;
+    }
+
+    renderImageOrPlaceholder = () => {
         const {
             dimensions,
+            fileInfo,
+            src,
             ...props
         } = this.props;
 
+        let placeHolder;
+        let imageStyleChangesOnLoad = {};
+        let ariaLabelImage = localizeMessage('file_attachment.thumbnail', 'file thumbnail');
+        if (fileInfo) {
+            ariaLabelImage += ` ${fileInfo.name}`.toLowerCase();
+        }
+
+        if (dimensions && dimensions.width && !this.state.loaded) {
+            placeHolder = (
+                <div
+                    className={`image-loading__container ${this.props.className}`}
+                    style={{maxWidth: dimensions.width}}
+                >
+                    <svg
+                        xmlns='http://www.w3.org/2000/svg'
+                        viewBox={`0 0 ${dimensions.width} ${dimensions.height}`}
+                        style={{verticalAlign: 'middle', maxHeight: dimensions.height, maxWidth: dimensions.width}}
+                    />
+                </div>
+            );
+        }
         Reflect.deleteProperty(props, 'showLoader');
         Reflect.deleteProperty(props, 'onImageLoaded');
         Reflect.deleteProperty(props, 'onImageLoadFail');
 
-        let src;
-        if (!this.state.loaded && dimensions) {
-            // Generate a blank image as a placeholder because that will scale down to fit the available space
-            // while maintaining the correct aspect ratio
-            src = createPlaceholderImage(dimensions.width, dimensions.height);
-        } else if (this.state.error) {
-            return null;
-        } else {
-            src = this.props.src;
+        //The css hack here for loading images in the background can be removed after IE11 is dropped in 5.16v
+        //We can go back to https://github.com/mattermost/mattermost-webapp/pull/2924/files
+        if (!this.state.loaded && dimensions && dimensions.width) {
+            imageStyleChangesOnLoad = {position: 'absolute', top: 0, height: 1, width: 1, visibility: 'hidden', overflow: 'hidden'};
         }
 
         return (
             <React.Fragment>
-                {!this.state.loaded && this.props.showLoader &&
-                    <div style={{position: 'absolute'}}>
-                        <LoadingImagePreview
-                            containerClass={'file__image-loading'}
-                        />
-                    </div>
-                }
-                <img
-                    {...props}
-                    src={src}
-                />
+                {placeHolder}
+                <div
+                    className='style--none file-preview__button'
+                    style={imageStyleChangesOnLoad}
+                >
+                    <img
+                        {...props}
+                        aria-label={ariaLabelImage}
+                        tabIndex='0'
+                        onKeyDown={this.onEnterKeyDown}
+                        className={this.props.className}
+                        src={src}
+                        onError={this.handleError}
+                        onLoad={this.handleLoad}
+                    />
+                </div>
+            </React.Fragment>
+        );
+    }
+
+    render() {
+        return (
+            <React.Fragment>
+                {this.renderImageLoaderIfNeeded()}
+                {this.renderImageOrPlaceholder()}
             </React.Fragment>
         );
     }
