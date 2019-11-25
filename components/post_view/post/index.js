@@ -27,7 +27,7 @@ export function isFirstReply(post, previousPost) {
             // Returns true as long as the previous post is part of a different thread
             return post.root_id !== previousPost.id && post.root_id !== previousPost.root_id;
         }
-        
+
         // The previous post is not a real post
         return true;
     }
@@ -39,11 +39,11 @@ export function isFirstReply(post, previousPost) {
 function makeMapStateToProps() {
     const isPostCommentMention = makeIsPostCommentMention();
     const createAriaLabelForPost = makeCreateAriaLabelForPost();
-    const config = getConfig(state);
-    const enableClickToReply = config.ExperimentalEnableClickToReply === 'true';
 
     return (state, ownProps) => {
         const post = ownProps.post || getPost(state, ownProps.postId);
+        const config = getConfig(state);
+        const enableClickToReply = config.ExperimentalEnableClickToReply === 'true';
         let replyCount = post.reply_count;
         if (post.root_id !== '') {
             const rootPost = getPost(state, post.root_id);
