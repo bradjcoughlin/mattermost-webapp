@@ -6,12 +6,15 @@ import React from 'react';
 import {FormattedMessage} from 'react-intl';
 import {Posts} from 'mattermost-redux/constants';
 
+import Constants from 'utils/constants';
 import * as PostUtils from 'utils/post_utils';
 import * as Utils from 'utils/utils';
 
 import PostMarkdown from 'components/post_markdown';
 import Pluggable from 'plugins/pluggable';
 import ShowMore from 'components/post_view/show_more';
+
+const PreReleaseFeatures = Constants.PRE_RELEASE_FEATURES;
 
 export default class PostMessageView extends React.PureComponent {
     static propTypes = {
@@ -62,11 +65,6 @@ export default class PostMessageView extends React.PureComponent {
         pluginPostTypes: PropTypes.object,
 
         /**
-         * Whether or not experimental click-to-reply is enabled.
-         */
-        enableClickToReply: PropTypes.bool.isRequired,
-
-        /**
          * Whether or not this is a system message
          */
         isSystemMessage: PropTypes.bool,
@@ -99,7 +97,7 @@ export default class PostMessageView extends React.PureComponent {
     handlePostMessageClick = (e) => {
         Utils.handleFormattedTextClick(e);
 
-        if (this.props.enableClickToReply && !e.defaultPrevented && !this.props.isRHS && !this.props.isSystemMessage) {
+        if (Utils.isFeatureEnabled(PreReleaseFeatures.CLICK_TO_REPLY) && !e.defaultPrevented && !this.props.isRHS && !this.props.isSystemMessage) {
             this.props.actions.selectPost(this.props.post);
         }
     }
@@ -146,7 +144,7 @@ export default class PostMessageView extends React.PureComponent {
 
     getClassName = () => {
         let className = 'post-message__text';
-        if (this.props.enableClickToReply) {
+        if (Utils.isFeatureEnabled(PreReleaseFeatures.CLICK_TO_REPLY)) {
             className += ' post-message__text--clickable';
         }
         return className;

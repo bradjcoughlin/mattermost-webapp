@@ -82,11 +82,6 @@ export default class Post extends React.PureComponent {
          */
         getPostList: PropTypes.func.isRequired,
 
-        /**
-         * Whether or not experimental click-to-reply is enabled.
-         */
-        enableClickToReply: PropTypes.bool.isRequired,
-
         actions: PropTypes.shape({
             selectPost: PropTypes.func.isRequired,
             selectPostCard: PropTypes.func.isRequired,

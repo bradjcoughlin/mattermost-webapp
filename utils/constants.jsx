@@ -1285,6 +1285,10 @@ export const Constants = {
             label: 'markdown_preview', // github issue: https://github.com/mattermost/platform/pull/1389
             description: 'Show markdown preview option in message input box',
         },
+        CLICK_TO_REPLY: {
+            label: 'click_to_reply',
+            description: 'Clicking directly on a post opens a new or existing thread'
+        }
     },
     OVERLAY_TIME_DELAY_SMALL: 100,
     OVERLAY_TIME_DELAY: 400,

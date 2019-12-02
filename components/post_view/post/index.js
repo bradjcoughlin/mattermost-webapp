@@ -42,8 +42,6 @@ function makeMapStateToProps() {
 
     return (state, ownProps) => {
         const post = ownProps.post || getPost(state, ownProps.postId);
-        const config = getConfig(state);
-        const enableClickToReply = config.ExperimentalEnableClickToReply === 'true';
         let replyCount = post.reply_count;
         if (post.root_id !== '') {
             const rootPost = getPost(state, post.root_id);
@@ -77,7 +75,6 @@ function makeMapStateToProps() {
             isCommentMention: isPostCommentMention(state, post.id),
             center: get(state, Preferences.CATEGORY_DISPLAY_SETTINGS, Preferences.CHANNEL_DISPLAY_MODE, Preferences.CHANNEL_DISPLAY_MODE_DEFAULT) === Preferences.CHANNEL_DISPLAY_MODE_CENTERED,
             compactDisplay: get(state, Preferences.CATEGORY_DISPLAY_SETTINGS, Preferences.MESSAGE_DISPLAY, Preferences.MESSAGE_DISPLAY_DEFAULT) === Preferences.MESSAGE_DISPLAY_COMPACT,
-            enableClickToReply,
         };
     };
 }

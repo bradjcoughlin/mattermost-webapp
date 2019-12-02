@@ -312,6 +312,13 @@ export default class AdvancedSettingsDisplay extends React.PureComponent {
                     defaultMessage='Show markdown preview option in message input box'
                 />
             );
+        case 'CLICK_TO_REPLY':
+            return (
+                <FormattedMessage
+                    id='user.settings.advance.click_to_reply'
+                    defaultMessage='Clicking directly on a post opens a new or existing thread'
+                />
+            );
         default:
             return null;
         }
@@ -483,8 +490,8 @@ export default class AdvancedSettingsDisplay extends React.PureComponent {
                     <SettingItemMax
                         title={
                             <FormattedMessage
-                                id='user.settings.advance.preReleaseTitle'
-                                defaultMessage='Preview pre-release features'
+                                id='user.settings.advance.experimentalTitle'
+                                defaultMessage='Enable Experimental Features'
                             />
                         }
                         inputs={inputs}
@@ -497,7 +504,7 @@ export default class AdvancedSettingsDisplay extends React.PureComponent {
             } else {
                 previewFeaturesSection = (
                     <SettingItemMin
-                        title={Utils.localizeMessage('user.settings.advance.preReleaseTitle', 'Preview pre-release features')}
+                        title={Utils.localizeMessage('user.settings.advance.experimentalTitle', 'Enable Experimental Features')}
                         describe={
                             <FormattedMessage
                                 id='user.settings.advance.enabledFeatures'

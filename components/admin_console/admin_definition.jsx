@@ -4388,15 +4388,6 @@ const AdminDefinition = {
                         help_text_markdown: false,
                         placeholder: t('admin.experimental.userStatusAwayTimeout.example'),
                         placeholder_default: 'E.g.: "300"',
-                    },
-                    {
-                        type: Constants.SettingsTypes.TYPE_BOOL,
-                        key: 'ExperimentalSettings.EnableClickToReply',
-                        label: t('admin.experimental.enableClickToReply.title'),
-                        label_default: 'Enable Click-to-Reply',
-                        help_text: t('admin.experimental.enableClickToReply.desc'),
-                        help_text_default: 'When enabled, clicking directly on a post‘s body will start a reply–an alternative to clicking the reply button in the post context menu.',
-                        help_text_markdown: false,
                     }, // eslint-disable-next-line lines-around-comment
                     // {
                     //     type: Constants.SettingsTypes.TYPE_BOOL,
