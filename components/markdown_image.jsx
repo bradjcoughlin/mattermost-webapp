@@ -8,7 +8,7 @@ import Constants from 'utils/constants.jsx';
 
 import ExternalImage from 'components/external_image';
 import SizeAwareImage from 'components/size_aware_image';
-import ViewImageModal from 'components/view_image';
+import ViewImageModal from 'components/view_image_modal';
 
 import brokenImageIcon from 'images/icons/brokenimage.png';
 

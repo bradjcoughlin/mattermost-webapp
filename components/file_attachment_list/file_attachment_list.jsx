@@ -11,7 +11,7 @@ import {getFileType} from 'utils/utils';
 
 import FileAttachment from 'components/file_attachment';
 import SingleImageView from 'components/single_image_view';
-import ViewImageModal from 'components/view_image';
+import ViewImageModal from 'components/view_image_modal';
 
 export default class FileAttachmentList extends React.PureComponent {
     static propTypes = {

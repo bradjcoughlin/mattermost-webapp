@@ -6,7 +6,7 @@ import React from 'react';
 
 import ExternalImage from 'components/external_image';
 import SizeAwareImage from 'components/size_aware_image';
-import ViewImageModal from 'components/view_image';
+import ViewImageModal from 'components/view_image_modal';
 
 export default class PostImage extends React.PureComponent {
     static propTypes = {

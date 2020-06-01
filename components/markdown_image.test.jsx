@@ -7,7 +7,7 @@ import {shallow} from 'enzyme';
 
 import MarkdownImage from './markdown_image';
 import SizeAwareImage from './size_aware_image';
-import ViewImageModal from './view_image';
+import ViewImageModal from './view_image_modal';
 
 describe('components/MarkdownImage', () => {
     const baseProps = {

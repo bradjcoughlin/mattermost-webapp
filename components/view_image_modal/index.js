@@ -7,7 +7,7 @@ import {getPost} from 'mattermost-redux/selectors/entities/posts';
 
 import {canDownloadFiles} from 'utils/file_utils.jsx';
 
-import ViewImage from './view_image.jsx';
+import ViewImageModal from './view_image_modal.jsx';
 
 function mapStateToProps(state, ownProps) {
     const config = getConfig(state);
@@ -20,4 +20,4 @@ function mapStateToProps(state, ownProps) {
     };
 }
 
-export default connect(mapStateToProps)(ViewImage);
+export default connect(mapStateToProps)(ViewImageModal);
