@@ -53,6 +53,7 @@ export default class FileAttachmentList extends React.PureComponent {
 
     render() {
         const {
+            canDownloadFiles,
             compactDisplay,
             enableSVGs,
             fileInfos,
@@ -70,6 +71,7 @@ export default class FileAttachmentList extends React.PureComponent {
                         isEmbedVisible={this.props.isEmbedVisible}
                         postId={this.props.post.id}
                         compactDisplay={compactDisplay}
+                        canDownloadFiles={canDownloadFiles}
                     />
                 );
             }

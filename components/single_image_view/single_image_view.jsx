@@ -3,14 +3,17 @@
 
 import PropTypes from 'prop-types';
 import React from 'react';
+import {Tooltip} from 'react-bootstrap';
 
-import {getFilePreviewUrl, getFileUrl} from 'mattermost-redux/utils/file_utils';
+import {getFilePreviewUrl, getFileUrl, getFileDownloadUrl} from 'mattermost-redux/utils/file_utils';
 
+import OverlayTrigger from 'components/overlay_trigger';
 import SizeAwareImage from 'components/size_aware_image';
 import {FileTypes} from 'utils/constants';
 import {
     getFileType,
 } from 'utils/utils';
+import {localizeMessage} from 'utils/utils.jsx';
 
 import ViewImageModal from 'components/view_image_modal';
 
@@ -72,7 +75,6 @@ export default class SingleImageView extends React.PureComponent {
     }
 
     handleImageClick = () => {
-        console.log(this.props.fileInfo);
         this.setState({showPreviewModal: true});
     }
 
@@ -96,6 +98,7 @@ export default class SingleImageView extends React.PureComponent {
 
         const previewHeight = fileInfo.height;
         const previewWidth = fileInfo.width;
+        const fileName = fileInfo.name;
 
         let minPreviewClass = '';
         if (
@@ -192,8 +195,29 @@ export default class SingleImageView extends React.PureComponent {
                     >
                         <div
                             className={`image-loaded ${fadeInClass} ${svgClass}`}
-                            style={styleIfSvgWithDimensions}
+                            style={{...styleIfSvgWithDimensions, position: 'relative'}}
                         >
+                            <div className={'post-image__download'}>
+                                <OverlayTrigger
+                                    delayShow={1000}
+                                    placement='top'
+                                    overlay={
+                                        <Tooltip id='file-name__tooltip'>
+                                            {localizeMessage('view_image_popover.download', 'Download')}
+                                        </Tooltip>
+                                    }
+                                >
+                                    <a
+                                        href={getFileDownloadUrl(fileInfo.id)}
+                                        aria-label={localizeMessage('view_image_popover.download', 'Download').toLowerCase()}
+                                        download={fileName}
+                                        target='_blank'
+                                        rel='noopener noreferrer'
+                                    >
+                                        <i className='icon icon-download-outline'/>
+                                    </a>
+                                </OverlayTrigger>
+                            </div>
                             <SizeAwareImage
                                 onClick={this.handleImageClick}
                                 className={minPreviewClass}
