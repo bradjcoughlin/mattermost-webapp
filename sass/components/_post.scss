@@ -986,6 +986,8 @@
                 svg {
                     position: relative;
                     top: 2px;
+                    stroke: rgba(var(--center-channel-color-rgb), 0.4);
+                    border-color: rgba(var(--center-channel-color-rgb), 0.35);
                 }
 
                 .icon {
@@ -996,7 +998,7 @@
                 }
             }
 
-            .post-image__download {
+            .post-image--button__download {
                 opacity: 1;
                 padding: 0;
                 position: relative;

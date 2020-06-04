@@ -197,7 +197,7 @@ export default class SingleImageView extends React.PureComponent {
                             className={`image-loaded ${fadeInClass} ${svgClass}`}
                             style={{...styleIfSvgWithDimensions, position: 'relative'}}
                         >
-                            <div className={'post-image__download'}>
+                            <div className={'single-image--button__download'}>
                                 <OverlayTrigger
                                     delayShow={1000}
                                     placement='top'
@@ -215,6 +215,26 @@ export default class SingleImageView extends React.PureComponent {
                                         rel='noopener noreferrer'
                                     >
                                         <i className='icon icon-download-outline'/>
+                                    </a>
+                                </OverlayTrigger>
+                            </div>
+                            <div className={'single-image--button__permalink'}>
+                                <OverlayTrigger
+                                    delayShow={1000}
+                                    placement='top'
+                                    overlay={
+                                        <Tooltip id='file-name__tooltip'>
+                                            {'Copy public link'}
+                                        </Tooltip>
+                                    }
+                                >
+                                    <a
+                                        href={'#'}
+                                        aria-label={''}
+                                        target='_blank'
+                                        rel='noopener noreferrer'
+                                    >
+                                        <i className='icon icon-link-variant'/>
                                     </a>
                                 </OverlayTrigger>
                             </div>

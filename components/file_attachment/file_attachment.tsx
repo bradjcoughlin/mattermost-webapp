@@ -171,7 +171,7 @@ export default class FileAttachment extends React.PureComponent<Props, State> {
                     compactDisplay={compactDisplay}
                     canDownload={this.props.canDownloadFiles}
                     handleImageClick={this.onAttachmentClick}
-                    iconClass={'post-image__download'}
+                    iconClass={'post-image--button__download'}
                 >
                     <i className='icon icon-download-outline'/>
                 </FilenameOverlay>
