@@ -197,7 +197,7 @@ export default class SingleImageView extends React.PureComponent {
                             className={`image-loaded ${fadeInClass} ${svgClass}`}
                             style={{...styleIfSvgWithDimensions, position: 'relative'}}
                         >
-                            <div className={'single-image--button__download'}>
+                            <div className={'single-image__button--download'}>
                                 <OverlayTrigger
                                     delayShow={1000}
                                     placement='top'
@@ -218,7 +218,7 @@ export default class SingleImageView extends React.PureComponent {
                                     </a>
                                 </OverlayTrigger>
                             </div>
-                            <div className={'single-image--button__permalink'}>
+                            <div className={'single-image__button--permalink'}>
                                 <OverlayTrigger
                                     delayShow={1000}
                                     placement='top'

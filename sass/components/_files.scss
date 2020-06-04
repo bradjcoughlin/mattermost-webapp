@@ -312,7 +312,7 @@
     &:hover {
         @include box-shadow($elevation-1);
 
-        .post-image--button__download {
+        .post-image__button--download {
             opacity: 1;
         }
     }
@@ -575,6 +575,7 @@
 }
 
 %post-image--button {
+    @include single-transition(opacity, .15s, ease);
     align-items: center;
     display: flex;
     height: 100%;
@@ -627,11 +628,14 @@
 
         &:hover {
             @include opacity(1);
+            background-color: var(--button-bg);
+            border-color: var(--button-bg);
+            stroke: var(--button-color);
         }
     }
 }
 
-.post-image__details .post-image--button__download {
+.post-image__details .post-image__button--download {
     @extend %post-image--button;
 }
 
@@ -648,21 +652,21 @@
         border-radius: 4px;
         opacity: 0;
     }
-    .single-image--button__download {
+    .single-image__button--download {
         @extend %single-image--button;
         right: 0;
     }
-    .single-image--button__permalink {
+    .single-image__button--permalink {
         @extend %single-image--button;
         right: 40px;
     }
     &:hover {
-        .single-image--button__download,
-        .single-image--button__permalink {
+        .single-image__button--download,
+        .single-image__button--permalink {
             opacity: 1;
         }
     }
 }
-.post.post--compact .file-view--single .image-loaded .single-image--button__download {
+.post.post--compact .file-view--single .image-loaded .single-image__button--download {
     margin-bottom: 8px;
 }
