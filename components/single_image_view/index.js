@@ -3,6 +3,7 @@
 
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import {getConfig} from 'mattermost-redux/selectors/entities/general';
 
 import {toggleEmbedVisibility} from 'actions/post_actions';
 
@@ -12,9 +13,11 @@ import SingleImageView from 'components/single_image_view/single_image_view.jsx'
 
 function mapStateToProps(state) {
     const isRhsOpen = getIsRhsOpen(state);
+    const config = getConfig(state);
 
     return {
         isRhsOpen,
+        enablePublicLink: config.EnablePublicLink === 'true',
     };
 }
 

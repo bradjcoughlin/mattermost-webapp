@@ -7,6 +7,7 @@ import {Tooltip} from 'react-bootstrap';
 
 import {getFilePreviewUrl, getFileUrl, getFileDownloadUrl} from 'mattermost-redux/utils/file_utils';
 
+import * as GlobalActions from 'actions/global_actions';
 import OverlayTrigger from 'components/overlay_trigger';
 import SizeAwareImage from 'components/size_aware_image';
 import {FileTypes} from 'utils/constants';
@@ -23,7 +24,7 @@ export default class SingleImageView extends React.PureComponent {
     static propTypes = {
         postId: PropTypes.string.isRequired,
         fileInfo: PropTypes.object.isRequired,
-        isRhsOpen: PropTypes.bool.isRequired,
+        enablePublicLink: PropTypes.bool.isRequired,
         compactDisplay: PropTypes.bool,
         isEmbedVisible: PropTypes.bool,
         actions: PropTypes.shape({
@@ -84,6 +85,10 @@ export default class SingleImageView extends React.PureComponent {
 
     toggleEmbedVisibility = () => {
         this.props.actions.toggleEmbedVisibility(this.props.postId);
+    }
+
+    handleGetPublicLink = () => {
+        GlobalActions.showGetPublicLinkModal(this.props.fileInfo.id);
     }
 
     render() {
@@ -229,7 +234,7 @@ export default class SingleImageView extends React.PureComponent {
                                     }
                                 >
                                     <a
-                                        href={'#'}
+                                        onClick={this.handleGetPublicLink}
                                         aria-label={''}
                                         target='_blank'
                                         rel='noopener noreferrer'
