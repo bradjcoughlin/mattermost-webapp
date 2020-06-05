@@ -204,7 +204,7 @@ export default class SingleImageView extends React.PureComponent {
                         >
                             <div className={'single-image__button--download'}>
                                 <OverlayTrigger
-                                    delayShow={1000}
+                                    delayShow={400}
                                     placement='top'
                                     overlay={
                                         <Tooltip id='file-name__tooltip'>
@@ -225,7 +225,7 @@ export default class SingleImageView extends React.PureComponent {
                             </div>
                             <div className={'single-image__button--permalink'}>
                                 <OverlayTrigger
-                                    delayShow={1000}
+                                    delayShow={400}
                                     placement='top'
                                     overlay={
                                         <Tooltip id='file-name__tooltip'>

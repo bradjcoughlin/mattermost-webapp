@@ -82,7 +82,7 @@ export default class FilenameOverlay extends React.PureComponent<Props> {
             filenameOverlay = (
                 <div className={iconClass || 'post-image__name'}>
                     <OverlayTrigger
-                        delayShow={1000}
+                        delayShow={400}
                         placement='top'
                         overlay={
                             <Tooltip id='file-name__tooltip'>
